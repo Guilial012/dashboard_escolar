@@ -1,9 +1,14 @@
 {
   "version": 2,
   "builds": [
-    { "src": "server/server.js", "use": "@vercel/node" }
+    { "src": "server/server.js", "use": "@vercel/node" },
+    { "src": "index.html",       "use": "@vercel/static" },
+    { "src": "css/**",           "use": "@vercel/static" },
+    { "src": "js/**",            "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "server/server.js" }
+    { "src": "/api/(.*)",  "dest": "server/server.js" },
+    { "src": "/auth/(.*)", "dest": "server/server.js" },
+    { "src": "/(.*)",      "dest": "/$1" }
   ]
 }
