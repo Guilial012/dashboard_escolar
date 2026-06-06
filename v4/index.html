@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Escolar</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ── Top App Bar ─────────────────────────────────────────────── -->
+<div class="top-bar">
+  <span class="top-bar-title">📚 Dashboard Escolar</span>
+  <div class="top-bar-actions">
+    <span class="cache-badge" id="cache-badge"></span>
+    <button class="icon-btn" id="sync-btn" title="Atualizar Google Calendar" onclick="loadGCal(true)">
+      🔄<span class="sync-dot"></span>
+    </button>
+  </div>
+</div>
+
+<!-- ── Content ─────────────────────────────────────────────────── -->
+<div class="content">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card s-prova"> <div class="stat-num" id="st-pr">-</div><div class="stat-lbl">Provas</div></div>
+    <div class="stat-card s-apres"> <div class="stat-num" id="st-ap">-</div><div class="stat-lbl">Apres.</div></div>
+    <div class="stat-card s-entrega"><div class="stat-num" id="st-en">-</div><div class="stat-lbl">Entregas</div></div>
+    <div class="stat-card s-outros"> <div class="stat-num" id="st-ou">-</div><div class="stat-lbl">Outros</div></div>
+  </div>
+
+  <!-- Subtitle -->
+  <div style="font-size:13px;color:var(--md-on-surface-variant)" id="subtitle">Carregando...</div>
+
+  <!-- Nav bar -->
+  <div class="nav-bar">
+    <button class="nav-item active" onclick="showTab('tasks')"><span class="nav-icon">☑️</span> Tarefas</button>
+    <button class="nav-item" onclick="showTab('schedule')"><span class="nav-icon">🗓️</span> Horário</button>
+  </div>
+
+  <!-- ════ TAREFAS ════ -->
+  <div id="tab-tasks">
+    <div class="grid2" style="margin-bottom:12px">
+
+      <!-- Calendar -->
+      <div class="md-card" style="align-self:start">
+        <div class="cal-wrap">
+          <div class="cal-nav">
+            <button class="cal-nb" onclick="chMonth(-1)">&#8249;</button>
+            <span class="cal-month" id="cal-title"></span>
+            <button class="cal-nb" onclick="chMonth(1)">&#8250;</button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div id="day-detail" style="padding:0 8px 8px"></div>
+      </div>
+
+      <!-- Tasks -->
+      <div class="md-card" style="display:flex;flex-direction:column">
+        <div class="md-card-header">
+          <div>
+            <div class="md-card-title">Tarefas &amp; Atividades</div>
+          </div>
+          <span class="sp" id="gcal-sp" style="display:none"></span>
+        </div>
+        <div class="gcal-bar" id="gcal-bar"><span class="sp"></span> Sincronizando...</div>
+        <div class="chips-row">
+          <button class="chip active" onclick="setFilt('all')">Todas</button>
+          <button class="chip" onclick="setFilt('prova')">Provas</button>
+          <button class="chip" onclick="setFilt('apresentacao')">Apresentações</button>
+          <button class="chip" onclick="setFilt('entrega')">Entregas</button>
+          <button class="chip" onclick="setFilt('outro')">Outros</button>
+        </div>
+        <div class="task-list" id="task-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ HORÁRIO ════ -->
+  <div id="tab-schedule" style="display:none">
+    <div class="grid2">
+
+      <!-- Day view -->
+      <div class="md-card" style="align-self:start">
+        <div id="today-banner"></div>
+        <div class="day-tabs" id="day-tabs">
+          <button class="day-tab" data-d="1" onclick="selDay(1)">Seg</button>
+          <button class="day-tab" data-d="2" onclick="selDay(2)">Ter</button>
+          <button class="day-tab" data-d="3" onclick="selDay(3)">Qua</button>
+          <button class="day-tab" data-d="4" onclick="selDay(4)">Qui</button>
+          <button class="day-tab" data-d="5" onclick="selDay(5)">Sex</button>
+        </div>
+        <div class="slot-list" id="slot-list"></div>
+        <div class="site-link">🔗 <a href="https://sites.google.com/institutocapibaribe.com.br/fundamental2/turmas-hor%C3%A1rios-agenda/9%C2%BA-ano-a" target="_blank">Horário oficial IC — 9º Ano A</a></div>
+      </div>
+
+      <!-- Week table -->
+      <div class="md-card">
+        <div class="week-nav">
+          <button class="week-nb" onclick="chWeek(-1)">&#8249;</button>
+          <span id="wlabel"></span>
+          <button class="week-nb" onclick="chWeek(1)">&#8250;</button>
+        </div>
+        <div style="overflow-x:auto;padding:6px 0">
+          <table class="wtbl" id="wtbl"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openSheet()">
+  <span class="fab-icon">+</span> Nova Tarefa
+</button>
+
+<!-- Bottom sheet -->
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet(event)">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Nova Tarefa</div>
+    <div class="sheet-body">
+      <div class="md-field">
+        <input type="text" id="f-title" placeholder=" "/>
+        <label>Título *</label>
+      </div>
+      <div class="sheet-row">
+        <div class="md-field">
+          <input type="date" id="f-date"/>
+          <label>Data *</label>
+        </div>
+        <div class="md-field">
+          <select id="f-type">
+            <option value="prova">Prova</option>
+            <option value="apresentacao">Apresentação</option>
+            <option value="entrega">Entrega</option>
+            <option value="filme">Filme/Atividade</option>
+            <option value="outro">Outro</option>
+          </select>
+          <label>Tipo</label>
+        </div>
+      </div>
+      <div class="md-field">
+        <textarea id="f-desc" placeholder=" "></textarea>
+        <label>Descrição / Conteúdo</label>
+      </div>
+      <label class="sheet-gcal">
+        <label class="md-switch">
+          <input type="checkbox" id="f-gcal" checked/>
+          <div class="md-switch-track"></div>
+          <div class="md-switch-thumb"></div>
+        </label>
+        Adicionar ao Google Calendar
+      </label>
+      <div class="sheet-actions">
+        <button class="btn-text" onclick="closeSheet()">Cancelar</button>
+        <button class="btn-filled" id="f-sub" onclick="submitTask()">Adicionar</button>
+      </div>
+      <div class="form-msg" id="f-msg"></div>
+    </div>
+  </div>
+</div>
+
+
+  <script src="js/app.js"></script>
+</body>
+</html>

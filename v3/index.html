@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Escolar — IC 9º Ano A</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────── -->
+<div class="page-header">
+  <div>
+    <h1>📚 Dashboard Escolar</h1>
+    <p id="subtitle">Carregando...</p>
+  </div>
+  <button class="btn-p" id="add-btn" onclick="openAddForm()">+ Tarefa</button>
+</div>
+
+<!-- ── Stats ───────────────────────────────────────────── -->
+<div class="stats">
+  <div class="stat s-prova"><div class="num" id="st-provas">-</div><div class="lbl">Provas</div></div>
+  <div class="stat s-apres"><div class="num" id="st-apres">-</div><div class="lbl">Apres.</div></div>
+  <div class="stat s-entrega"><div class="num" id="st-entregas">-</div><div class="lbl">Entregas</div></div>
+  <div class="stat s-outros"><div class="num" id="st-outros">-</div><div class="lbl">Outros</div></div>
+</div>
+
+<!-- ── Tab bar ─────────────────────────────────────────── -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('tasks')">📋 Tarefas</button>
+  <button class="tab-btn" onclick="showTab('schedule')">🗓️ Horário</button>
+</div>
+
+<!-- ════════════════ TAREFAS ════════════════ -->
+<div id="tab-tasks">
+  <div class="main">
+    <div class="cal-card">
+      <div class="cal-nav">
+        <button class="cnb" onclick="changeMonth(-1)">&#8249;</button>
+        <h2 id="cal-title"></h2>
+        <button class="cnb" onclick="changeMonth(1)">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div id="day-panel"></div>
+    </div>
+    <div class="tasks-card">
+      <div class="tch">
+        <h2>Tarefas &amp; Atividades</h2>
+        <span id="gcal-sp" class="sp" style="display:none"></span>
+      </div>
+      <div class="gcal-st" id="gcal-st"><span class="sp"></span> Sincronizando com Google Calendar...</div>
+      <div class="frow">
+        <button class="fb f-all active" onclick="setFilter('all')">Todas</button>
+        <button class="fb f-prova" onclick="setFilter('prova')">Provas</button>
+        <button class="fb f-apresentacao" onclick="setFilter('apresentacao')">Apresentações</button>
+        <button class="fb f-entrega" onclick="setFilter('entrega')">Entregas</button>
+        <button class="fb f-outro" onclick="setFilter('outro')">Outros</button>
+      </div>
+      <div class="tlist" id="tlist"></div>
+    </div>
+  </div>
+  <div class="add-card" id="add-card">
+    <div class="atog" id="atog" onclick="toggleAdd()">
+      <h2>➕ Nova Tarefa</h2><span class="ico">+</span>
+    </div>
+    <div class="abody" id="abody">
+      <div class="fgrid">
+        <div class="fg full"><label class="fl">Título *</label><input class="fi" id="f-title" type="text" placeholder="Ex: Prova de Física — Capítulo 5"/></div>
+      </div>
+      <div class="fgrid">
+        <div class="fg"><label class="fl">Data *</label><input class="fi" id="f-date" type="date"/></div>
+        <div class="fg"><label class="fl">Tipo</label>
+          <select class="fs" id="f-type">
+            <option value="prova">Prova</option>
+            <option value="apresentacao">Apresentação</option>
+            <option value="entrega">Entrega</option>
+            <option value="filme">Filme/Atividade</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Descrição / Conteúdo</label><textarea class="fta" id="f-desc" placeholder="Ex: Capítulos 3 e 4, fórmulas, exercícios..."></textarea></div>
+      <label class="gcc"><input type="checkbox" id="f-gcal" checked/> Adicionar ao Google Calendar</label>
+      <div><button class="btn-p" id="f-sub" onclick="submitTask()">Adicionar Tarefa</button></div>
+      <div class="fmsg" id="f-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ HORÁRIO ════════════════ -->
+<div id="tab-schedule" style="display:none">
+  <div class="sch-grid">
+
+    <!-- Left: Day view -->
+    <div class="sch-card">
+      <div id="today-banner"></div>
+      <div class="dtabs" id="dtabs">
+        <button class="dtab" data-d="1" onclick="selDay(1)">Seg</button>
+        <button class="dtab" data-d="2" onclick="selDay(2)">Ter</button>
+        <button class="dtab" data-d="3" onclick="selDay(3)">Qua</button>
+        <button class="dtab" data-d="4" onclick="selDay(4)">Qui</button>
+        <button class="dtab" data-d="5" onclick="selDay(5)">Sex</button>
+      </div>
+      <div class="slist" id="slist"></div>
+      <div class="site-link">🔗 Horário oficial IC: <a href="https://sites.google.com/institutocapibaribe.com.br/fundamental2/turmas-hor%C3%A1rios-agenda/9%C2%BA-ano-a" target="_blank">9º Ano A</a></div>
+    </div>
+
+    <!-- Right: Weekly overview -->
+    <div class="sch-card">
+      <div class="wnav">
+        <button class="wnb" onclick="chgWeek(-1)">&#8249;</button>
+        <span id="wlabel"></span>
+        <button class="wnb" onclick="chgWeek(1)">&#8250;</button>
+      </div>
+      <div style="overflow-x:auto;padding:6px 0">
+        <table class="wtbl" id="wtbl"></table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+  <script src="js/app.js"></script>
+</body>
+</html>
