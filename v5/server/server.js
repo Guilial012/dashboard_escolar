@@ -134,13 +134,18 @@ app.post('/api/events', async (req, res) => {
   }
 });
 
-// ── Start ─────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n🚀 Dashboard rodando em http://localhost:${PORT}`);
-  if (!process.env.GOOGLE_REFRESH_TOKEN) {
-    console.warn('⚠  GOOGLE_REFRESH_TOKEN não encontrado no .env');
-    console.warn(`   Acesse http://localhost:${PORT}/auth/login para autorizar.\n`);
-  } else {
-    console.log('✅ Google Calendar configurado.\n');
-  }
-});
+// ── Start (local) — ignorado na Vercel ───────────────────────────
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 Dashboard rodando em http://localhost:${PORT}`);
+    if (!process.env.GOOGLE_REFRESH_TOKEN) {
+      console.warn('⚠  GOOGLE_REFRESH_TOKEN não encontrado no .env');
+      console.warn(`   Acesse http://localhost:${PORT}/auth/login para autorizar.\n`);
+    } else {
+      console.log('✅ Google Calendar configurado.\n');
+    }
+  });
+}
+
+// Exporta para a Vercel (serverless)
+module.exports = app;
